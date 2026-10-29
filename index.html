@@ -27,6 +27,62 @@
         }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        function openPolicy(type) {
+            const modal = document.getElementById('policy-modal');
+            const title = document.getElementById('policy-title');
+            const content = document.getElementById('policy-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            if (type === 'shipping') {
+                title.innerText = 'Shipping and Delivery Policy';
+                content.innerHTML = `
+                    <p class="mb-4">At <strong>Golden Sap</strong>, we ensure that your traditional jaggery reaches you in pristine condition across India.</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">1. Processing Time</h4>
+                    <p class="mb-2">Orders are typically processed within 1-2 business days. Patali and Nolen Gur are carefully packed to preserve their fresh, natural aroma.</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">2. Delivery Timelines</h4>
+                    <p class="mb-2">Standard delivery across India takes 3 to 7 business days depending on your location.</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">3. Shipping Charges</h4>
+                    <p>Shipping rates are calculated at checkout based on total weight and destination.</p>
+                `;
+            } else if (type === 'refund') {
+                title.innerText = 'Return and Refund Policy';
+                content.innerHTML = `
+                    <p class="mb-4">Because our products are food items (perishable natural jaggery), we maintain strict quality standards.</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">1. Damaged or Defective Items</h4>
+                    <p class="mb-2">If you receive a damaged or tampered package, please notify us via WhatsApp (+91 89450 46367) or email within 48 hours of delivery with photographic evidence.</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">2. Refunds</h4>
+                    <p>Eligible refunds are processed back to your original payment method within 5-7 business days after verification.</p>
+                `;
+            } else if (type === 'privacy') {
+                title.innerText = 'Privacy Policy';
+                content.innerHTML = `
+                    <p class="mb-4">Your privacy is extremely important to <strong>Golden Sap</strong>.</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">1. Information Collection</h4>
+                    <p class="mb-2">We collect your name, delivery address, phone number, and email solely for order fulfillment and customer support.</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">2. Data Security</h4>
+                    <p>We do not share, sell, or rent your personal information to third parties.</p>
+                `;
+            } else if (type === 'terms') {
+                title.innerText = 'Terms and Conditions';
+                content.innerHTML = `
+                    <p class="mb-4">Welcome to Golden Sap. By accessing our website and placing orders, you agree to the following terms:</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">1. Product Authenticity</h4>
+                    <p class="mb-2">All our products are 100% natural date palm jaggery sourced from Bengal. Natural variations in color and texture may occur.</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">2. Pricing & Offers</h4>
+                    <p>All prices reflect our current 17% discount promotion and are subject to change without prior notice.</p>
+                `;
+            }
+        }
+
+        function closePolicy() {
+            const modal = document.getElementById('policy-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+    </script>
 </head>
 <body class="bg-[#FAF7F2] text-[#222222] font-sans antialiased selection:bg-[#C69A51]/30">
 
@@ -350,15 +406,15 @@
             <div>
                 <h4 class="font-serif font-bold text-lg mb-4 text-[#C69A51]">Policies</h4>
                 <ul class="space-y-2 text-sm text-[#F6F0E5]/80">
-                    <li><a href="#" class="hover:text-white transition">Shipping & Delivery Policy</a></li>
-                    <li><a href="#" class="hover:text-white transition">Return & Refund Policy</a></li>
-                    <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
-                    <li><a href="#" class="hover:text-white transition">Terms & Conditions</a></li>
+                    <li><button onclick="openPolicy('shipping')" class="hover:text-white transition text-left">Shipping & Delivery Policy</button></li>
+                    <li><button onclick="openPolicy('refund')" class="hover:text-white transition text-left">Return & Refund Policy</button></li>
+                    <li><button onclick="openPolicy('privacy')" class="hover:text-white transition text-left">Privacy Policy</button></li>
+                    <li><button onclick="openPolicy('terms')" class="hover:text-white transition text-left">Terms & Conditions</button></li>
                 </ul>
             </div>
             <div>
                 <h4 class="font-serif font-bold text-lg mb-4 text-[#C69A51]">Newsletter</h4>
-                <p class="text-sm text-[#F6F0E5]/80 mb-4">Subscribe to receive seasonal updates and harvest news.</p>
+                <p class="text-sm text-[#F6F0E5]/80 mb-4">Subscribe to register for seasonal updates and harvest news.</p>
                 <form class="flex flex-col space-y-3" onsubmit="event.preventDefault(); alert('Subscribed successfully!');">
                     <input type="email" required placeholder="Enter your email" class="bg-[#183D2B] border border-[#C69A51]/40 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#C69A51]">
                     <button type="submit" class="bg-[#C69A51] hover:bg-[#b0853f] text-[#183D2B] font-bold py-3 px-4 rounded-lg text-sm transition">Subscribe</button>
@@ -369,6 +425,20 @@
             &copy; 2026 Golden Sap. All rights reserved. Website designed for premium D2C commerce.
         </div>
     </footer>
+
+    <!-- Policy Modal Popup -->
+    <div id="policy-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white text-[#222222] max-w-2xl w-full rounded-2xl p-8 relative shadow-2xl border border-[#C69A51]/30 max-h-[85vh] overflow-y-auto">
+            <button onclick="closePolicy()" class="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl font-bold">&times;</button>
+            <h3 id="policy-title" class="font-serif text-2xl font-bold text-[#183D2B] mb-4">Policy Title</h3>
+            <div id="policy-content" class="text-sm text-gray-700 leading-relaxed space-y-3">
+                <!-- Content injected dynamically -->
+            </div>
+            <div class="mt-8 text-right">
+                <button onclick="closePolicy()" class="bg-[#183D2B] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#713B22] transition">Close</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
