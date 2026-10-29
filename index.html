@@ -3,54 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .container {
-    text-align: center;
-}
-
-.board {
-    display: inline-grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-gap: 5px;
-}
-
-.cell {
-    width: 100px;
-    height: 100px;
-    background-color: lightgray;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 36px;
-    cursor: pointer;
-}
-
-button {
-    margin-top: 20px;
-    font-size: 18px;
-}
-
-    </style>
+    <title>Golden Sap | The Natural Sweetness of Bengal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: '#183D2B',
+                        cream: '#F6F0E5',
+                        jaggery: '#713B22',
+                        harvest: '#C69A51',
+                        charcoal: '#222222',
+                        surface: '#FAF7F2',
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>Tic Tac Toe</h1>
-        <div class="board">
-            <div class="cell" id="1"></div>
-            <div class="cell" id="2"></div>
-            <div class="cell" id="3"></div>
-            <div class="cell" id="4"></div>
-            <div class="cell" id="5"></div>
-            <div class="cell" id="6"></div>
-            <div class="cell" id="7"></div>
-            <div class="cell" id="8"></div>
-            <div class="cell" id="9"></div>
-        </div>
-        <button onclick="reset()">Reset</button>
+<body class="bg-[#FAF7F2] text-[#222222] font-sans antialiased selection:bg-[#C69A51]/30">
+
+    <!-- Announcement Bar -->
+    <div class="bg-[#183D2B] text-[#F6F0E5] text-xs md:text-sm py-2 px-4 text-center font-medium tracking-wide">
+        <span>Authentic Bengal Jaggery &nbsp;|&nbsp; Secure Payments &nbsp;|&nbsp; Delivery Across India</span>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 bg-[#F6F0E5]/95 backdrop-blur-md border-b border-[#C69A51]/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <button class="md:hidden text-[#183D2B] focus:outline-none" aria-label="Open menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <a href="#" class="flex flex-col">
+                    <span class="font-serif text-2xl font-bold text-[#183D2B]">Golden Sap</span>
+                    <span class="text-[10px] uppercase tracking-widest text-[#713B22] font-semibold">The Natural Sweetness of Bengal</span>
+                </a>
+            </div>
+
+            <nav class="hidden md:flex items-center space-x-8 font-medium text-[#183D2B]">
+                <a href="#" class="hover:text-[#C69A51] transition">Home</a>
+                <a href="#" class="hover:text-[#C69A51] transition">About Us</a>
+                <div class="relative group py-2">
+                    <span class="cursor-pointer hover:text-[#C69A51] transition flex items-center gap-1">Shop <span class="text-xs">▼</span></span>
+                    <div class="absolute top-full left-0 w-48 bg-white shadow-xl rounded-lg py-2 hidden group-hover:block border border-[#C69A51]/20">
+                        <a href="#" class="block px-4 py-2 text-sm text-[#183D2B] hover:bg-[#F6F0E5]">Patali Gur</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-[#183D2B] hover:bg-[#F6F0E5]">Nolen Gur</a>
+                    </div>
+                </div>
+                <a href="#" class="hover:text-[#C69A51] transition">Our Story</a>
+                <a href="#" class="hover:text-[#C69A51] transition">Contact</a>
+            </nav>
+
+            <div class="flex items-center space-x-5 text-[#183D2B]">
+                <button aria-label="Search" class="hover:text-[#C69A51] transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+                <a href="#" aria-label="Customer account" class="hover:text-[#C69A51] transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                </a>
+                <a href="#" aria-label="Shopping cart" class="relative hover:text-[#C69A51] transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    <span class="absolute -top-2 -right-2 bg-[#713B22] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-[#183D2B] text-[#F6F0E5] py-20 lg:py-32 overflow-hidden">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#C69A51_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <span class="inline-block bg-[#C69A51]/20 text-[#C69A51] px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase border border-[#C69A51]/30">
+                    Directly Sourced From Bengal
+                </span>
+                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+                    Pure Patali & Nolen Gur
+                </h1>
+                <p class="text-lg text-[#F6F0E5]/80 font-light leading-relaxed">
+                    Discover the Traditional Sweetness of Bengal. Explore traditional date palm jaggery, carefully sourced from Bengal artisans and delivered right to your doorstep.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
+                    <a href="#shop" class="bg-[#C69A51] hover:bg-[#b0853f] text-[#183D2B] font-bold px-8 py-4 rounded-xl text-center transition shadow-lg">
+                        Shop Now
+                    </a>
+                    <a href="#story" class="border border-[#F6F0E5]/40 hover:border-[#F6F0E5] text-[#F6F0E5] font-semibold px-8 py-4 rounded-xl text-center transition">
+                        Explore Our Story
+                    </a>
+                </div>
+            </div>
+            <div class="relative h-80 lg:h-[450px] rounded-2xl overflow-hidden shadow-2xl border-4 border-[#C69A51]/30 bg-[#713B22]/20 flex items-center justify-center">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#183D2B] via-transparent to-transparent z-10"></div>
+                <img src="https://grambahar.com/_next/image?url=https%3A%2F%2Fapi.grambahar.com%2Fassets%2F6a90d177-b16e-47ff-8d62-1ef7989c1fed.webp&w=1920&q=75" alt="Patali Gur Blocks" class="w-full h-full object-cover opacity-90 transform hover:scale-105 transition duration-700" />
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Categories -->
+    <section id="shop" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <span class="text-xs uppercase tracking-widest text-[#713B22] font-bold block mb-2">Our Offerings</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#183D2B]">Explore Traditional Collections</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white rounded-2xl p-8 shadow-md border border-[#C69A51]/20 flex flex-col justify-between hover:shadow-xl transition group">
+                <div>
+                    <div class="h-48 bg-[#F6F0E5] rounded-xl mb-6 overflow-hidden border border-[#C69A51]/10">
+                        <img src="https://grambahar.com/_next/image?url=https%3A%2F%2Fapi.grambahar.com%2Fassets%2F6a90d177-b16e-47ff-8d62-1ef7989c1fed.webp&w=1920&q=75" alt="Patali Gur" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <h3 class="font-serif text-2xl font-bold text-[#183D2B] mb-2">Patali Gur — Solid Date Palm Jaggery</h3>
+                    <p class="text-gray-600 mb-6">Handcrafted solid date palm jaggery pats with rich caramel notes and deep traditional flavor.</p>
+                </div>
+                <a href="#" class="inline-flex items-center justify-center bg-[#183D2B] hover:bg-[#713B22] text-[#F6F0E5] font-semibold py-3 px-6 rounded-xl transition">
+                    Shop Patali Collection &rarr;
+                </a>
+            </div>
+            <div class="bg-white rounded-2xl p-8 shadow-md border border-[#C69A51]/20 flex flex-col justify-between hover:shadow-xl transition group">
+                <div>
+                    <div class="h-48 bg-[#F6F0E5] rounded-xl mb-6 overflow-hidden border border-[#C69A51]/10">
+                        <img src="https://thebengalstore.com/cdn/shop/files/Untitled_design_1_09315c91-f630-4b3f-8276-126e46231bc6.png?v=1775133650&width=1200" alt="Nolen Gur" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <h3 class="font-serif text-2xl font-bold text-[#183D2B] mb-2">Nolen Gur — Liquid Date Palm Jaggery</h3>
+                    <p class="text-gray-600 mb-6">Fresh aromatic liquid date palm jaggery harvested during winter mornings in Bengal.</p>
+                </div>
+                <a href="#" class="inline-flex items-center justify-center bg-[#183D2B] hover:bg-[#713B22] text-[#F6F0E5] font-semibold py-3 px-6 rounded-xl transition">
+                    Shop Nolen Collection &rarr;
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="bg-[#F6F0E5] py-20 border-y border-[#C69A51]/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-xs uppercase tracking-widest text-[#713B22] font-bold block mb-2">The Golden Sap Standard</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#183D2B]">Why Choose Us</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-[#C69A51]/10 text-center">
+                    <div class="w-12 h-12 bg-[#183D2B] text-[#C69A51] rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">✓</div>
+                    <h4 class="font-serif font-bold text-[#183D2B] text-lg mb-2">Authentic Bengali Tradition</h4>
+                    <p class="text-sm text-gray-600">Rooted deeply in the rich culinary heritage of rural Bengal.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-[#C69A51]/10 text-center">
+                    <div class="w-12 h-12 bg-[#183D2B] text-[#C69A51] rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">★</div>
+                    <h4 class="font-serif font-bold text-[#183D2B] text-lg mb-2">Carefully Selected Products</h4>
+                    <p class="text-sm text-gray-600">Hand-picked batches meeting rigorous quality expectations.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-[#C69A51]/10 text-center">
+                    <div class="w-12 h-12 bg-[#183D2B] text-[#C69A51] rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">📦</div>
+                    <h4 class="font-serif font-bold text-[#183D2B] text-lg mb-2">Quality-Focused Packaging</h4>
+                    <p class="text-sm text-gray-600">Secure containers keeping aroma and texture pristine.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-[#C69A51]/10 text-center">
+                    <div class="w-12 h-12 bg-[#183D2B] text-[#C69A51] rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">🚚</div>
+                    <h4 class="font-serif font-bold text-[#183D2B] text-lg mb-2">Convenient Online Ordering</h4>
+                    <p class="text-sm text-gray-600">Seamless checkout and reliable doorstep delivery pan-India.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#183D2B] text-[#F6F0E5] pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 border-b border-[#C69A51]/20">
+            <div class="space-y-4">
+                <span class="font-serif text-2xl font-bold block text-white">Golden Sap</span>
+                <p class="text-sm text-[#F6F0E5]/80">“The Natural Sweetness of Bengal” — Bringing authentic date palm jaggery straight from rural producers to your home.</p>
+            </div>
+            <div>
+                <h4 class="font-serif font-bold text-lg mb-4 text-[#C69A51]">Quick Links</h4>
+                <ul class="space-y-2 text-sm text-[#F6F0E5]/80">
+                    <li><a href="#" class="hover:text-white transition">Home</a></li>
+                    <li><a href="#" class="hover:text-white transition">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition">Shop All</a></li>
+                    <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-serif font-bold text-lg mb-4 text-[#C69A51]">Policies</h4>
+                <ul class="space-y-2 text-sm text-[#F6F0E5]/80">
+                    <li><a href="#" class="hover:text-white transition">Shipping & Delivery Policy</a></li>
+                    <li><a href="#" class="hover:text-white transition">Return & Refund Policy</a></li>
+                    <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-white transition">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-serif font-bold text-lg mb-4 text-[#C69A51]">Newsletter</h4>
+                <p class="text-sm text-[#F6F0E5]/80 mb-4">Subscribe to receive seasonal updates and harvest news.</p>
+                <form class="flex flex-col space-y-3">
+                    <input type="email" placeholder="Enter your email" class="bg-[#112a1e] border border-[#C69A51]/40 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#C69A51]">
+                    <button type="submit" class="bg-[#C69A51] hover:bg-[#b0853f] text-[#183D2B] font-bold py-3 px-4 rounded-lg text-sm transition">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 text-center text-xs text-[#F6F0E5]/60">
+            &copy; 2026 Golden Sap. All rights reserved. Website designed for premium D2C commerce.
+        </div>
+    </footer>
+
 </body>
 </html>
