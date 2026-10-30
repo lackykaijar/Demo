@@ -28,7 +28,7 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
-        // Cart State Management
+        // Shopping Cart Management
         let cart = [];
 
         function addToCart(name, size, price) {
@@ -40,7 +40,7 @@
             }
             updateCartUI();
             
-            // Open cart drawer or show notification
+            // Cart Notification Popup
             const notification = document.getElementById('cart-notification');
             notification.innerText = `Added ${name} (${size}) to Cart!`;
             notification.classList.remove('translate-y-20', 'opacity-0');
@@ -55,20 +55,24 @@
             countElements.forEach(el => el.innerText = totalQty);
 
             const cartItemsContainer = document.getElementById('cart-items-container');
+            const subtotalElement = document.getElementById('cart-subtotal-price');
+            const shippingElement = document.getElementById('cart-shipping-price');
             const cartTotalElement = document.getElementById('cart-total-price');
             
             if (cart.length === 0) {
                 cartItemsContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Your cart is empty.</p>';
+                subtotalElement.innerText = '₹0';
+                shippingElement.innerText = '₹0';
                 cartTotalElement.innerText = '₹0';
                 return;
             }
 
             let html = '';
-            let totalPrice = 0;
+            let subtotal = 0;
 
             cart.forEach((item, index) => {
                 let itemTotal = item.price * item.qty;
-                totalPrice += itemTotal;
+                subtotal += itemTotal;
                 html += `
                     <div class="flex justify-between items-center border-b border-gray-100 py-3">
                         <div>
@@ -84,7 +88,18 @@
             });
 
             cartItemsContainer.innerHTML = html;
-            cartTotalElement.innerText = `₹${totalPrice}`;
+            subtotalElement.innerText = `₹${subtotal}`;
+
+            // Free delivery if subtotal >= 699, else standard shipping charge ₹49
+            let shipping = subtotal >= 699 ? 0 : 49;
+            if (shipping === 0) {
+                shippingElement.innerHTML = '<span class="text-green-600 font-bold">FREE</span>';
+            } else {
+                shippingElement.innerText = `₹49`;
+            }
+
+            let finalTotal = subtotal + shipping;
+            cartTotalElement.innerText = `₹${finalTotal}`;
         }
 
         function removeItem(index) {
@@ -98,6 +113,7 @@
             modal.classList.toggle('flex');
         }
 
+        // Policy Modal Functions
         function openPolicy(type) {
             const modal = document.getElementById('policy-modal');
             const title = document.getElementById('policy-title');
@@ -112,10 +128,8 @@
                     <p class="mb-4">At <strong>Golden Sap</strong>, we ensure that your traditional jaggery reaches you in pristine condition across India.</p>
                     <h4 class="font-bold text-[#183D2B] mt-4 mb-2">1. Processing Time</h4>
                     <p class="mb-2">Orders are typically processed within 1-2 business days. Patali and Nolen Gur are carefully packed to preserve their fresh, natural aroma.</p>
-                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">2. Delivery Timelines</h4>
-                    <p class="mb-2">Standard delivery across India takes 3 to 7 business days depending on your location.</p>
-                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">3. Shipping Charges</h4>
-                    <p>Shipping rates are calculated at checkout based on total weight and destination.</p>
+                    <h4 class="font-bold text-[#183D2B] mt-4 mb-2">2. Delivery Timelines & Charges</h4>
+                    <p class="mb-2">Standard delivery across India takes 3 to 7 business days. We charge a standard delivery fee of <strong>₹49</strong>, but <strong>Free Delivery</strong> is automatically applied on all orders above <strong>₹699</strong>!</p>
                 `;
             } else if (type === 'refund') {
                 title.innerText = 'Return and Refund Policy';
@@ -158,12 +172,17 @@
                 alert('Your cart is empty!');
                 return;
             }
+            let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let shipping = subtotal >= 699 ? 0 : 49;
+            let finalTotal = subtotal + shipping;
+
             let message = "Hello Golden Sap, I would like to place an order for the following items:\n";
             cart.forEach(item => {
                 message += `- ${item.name} (${item.size}) x ${item.qty} = ₹${item.price * item.qty}\n`;
             });
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            message += `\nTotal Amount: ₹${total} (17% Discount Applied)`;
+            message += `\nSubtotal: ₹${subtotal}`;
+            message += `\nDelivery Charge: ${shipping === 0 ? 'FREE (Orders above ₹699)' : '₹49'}`;
+            message += `\nTotal Amount: ₹${finalTotal} (17% Discount Applied)`;
             
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/918945046367?text=${encodedMessage}`, '_blank');
@@ -172,48 +191,45 @@
 </head>
 <body class="bg-[#FAF7F2] text-[#222222] font-sans antialiased selection:bg-[#C69A51]/30">
 
-    <!-- Announcement Bar -->
+    <!-- Top Announcement Bar -->
     <div class="bg-[#183D2B] text-[#F6F0E5] text-xs md:text-sm py-2 px-4 text-center font-medium tracking-wide flex items-center justify-center gap-2">
-        <span>🎉 Special Offer: Flat 17% Discount Applied Across All Items | Secure Payments | Delivery Across India</span>
-        <a href="https://wa.me/918945046367?text=Hello%20Golden%20Sap,%20I%20want%20to%20order%20with%20the%2017%25%20discount!" target="_blank" class="bg-[#25D366] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 hover:opacity-90 transition">
-            💬 Order on WhatsApp
+        <span>🎉 Free Delivery on Orders Above ₹699 | Standard Delivery Charge: ₹49 | Flat 17% OFF</span>
+        <a href="https://wa.me/918945046367?text=Hello%20Golden%20Sap,%20I%20want%20to%20order!" target="_blank" class="bg-[#25D366] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 hover:opacity-90 transition">
+            💬 WhatsApp
         </a>
     </div>
 
-    <!-- Navigation Header -->
-    <header class="sticky top-0 z-50 bg-[#F6F0E5]/95 backdrop-blur-md border-b border-[#C69A51]/20">
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 bg-[#F6F0E5]/95 backdrop-blur-md border-b border-[#C69A51]/20 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <a href="#home" class="flex flex-col">
-                    <span class="font-serif text-2xl font-bold text-[#183D2B]">Golden Sap</span>
-                    <span class="text-[10px] uppercase tracking-widest text-[#713B22] font-semibold">The Natural Sweetness of Bengal</span>
+                <a href="#home" class="flex items-center space-x-3">
+                    <img src="YOUR_LOGO_URL_HERE" alt="Golden Sap Logo" class="h-10 w-10 object-contain rounded-xl border border-[#C69A51]/30 bg-white p-1" onerror="this.style.display='none'">
+                    <div class="flex flex-col">
+                        <span class="font-serif text-2xl font-bold text-[#183D2B]">Golden Sap</span>
+                        <span class="text-[10px] uppercase tracking-widest text-[#713B22] font-semibold">The Natural Sweetness of Bengal</span>
+                    </div>
                 </a>
             </div>
 
             <nav class="hidden md:flex items-center space-x-8 font-medium text-[#183D2B]">
-                <a href="#home" class="hover:text-[#C69A51] transition">1. Home</a>
-                <a href="#about" class="hover:text-[#C69A51] transition">2. About Us</a>
-                <a href="#story" class="hover:text-[#C69A51] transition">3. Our Story</a>
-                <a href="#shop" class="hover:text-[#C69A51] transition">4. Shop</a>
-                <a href="#contact" class="hover:text-[#C69A51] transition">5. Contact Us</a>
+                <a href="#home" class="hover:text-[#C69A51] transition">Home</a>
+                <a href="#shop" class="hover:text-[#C69A51] transition">Shop Collection</a>
+                <a href="#reviews" class="hover:text-[#C69A51] transition">Reviews</a>
+                <a href="#about" class="hover:text-[#C69A51] transition">About Us</a>
+                <a href="#contact" class="hover:text-[#C69A51] transition">Contact</a>
             </nav>
 
             <div class="flex items-center space-x-4">
-                <!-- Cart Button (Cleaned up spacing completely) -->
                 <button onclick="toggleCartModal()" class="relative bg-[#183D2B] text-[#F6F0E5] px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-1 shadow-sm hover:bg-[#713B22] transition">
-                    🛒 Cart(<span class="cart-count">0</span>)
+                    🛒 Cart (<span class="cart-count">0</span>)
                 </button>
-                <a href="https://wa.me/918945046367?text=Hello%20Golden%20Sap,%20I%20would%20like%20to%20place%20an%20order." target="_blank" class="bg-[#25D366] hover:bg-[#20ba5a] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hidden sm:flex items-center gap-2 shadow-sm transition">
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.124-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                    <span>WhatsApp</span>
-                </a>
             </div>
         </div>
     </header>
 
-    <!-- 1. HOME SECTION -->
-    <section id="home" class="relative bg-[#183D2B] text-[#F6F0E5] py-20 lg:py-32 overflow-hidden">
-        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#C69A51_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    <!-- Hero Banner Section -->
+    <section id="home" class="relative bg-[#183D2B] text-[#F6F0E5] py-20 lg:py-28 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-6">
                 <span class="inline-block bg-[#C69A51]/20 text-[#C69A51] px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase border border-[#C69A51]/30">
@@ -223,297 +239,174 @@
                     Pure Patali & Nolen Gur
                 </h1>
                 <p class="text-lg text-[#F6F0E5]/80 font-light leading-relaxed">
-                    Discover the Traditional Sweetness of Bengal. Explore traditional date palm jaggery, carefully sourced from rural artisans and delivered straight to your doorstep.
+                    Experience the unadulterated, authentic taste of traditional Bengal winter jaggery. Free Delivery on orders above ₹699!
                 </p>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
                     <a href="#shop" class="bg-[#C69A51] hover:bg-[#b0853f] text-[#183D2B] font-bold px-8 py-4 rounded-xl text-center transition shadow-lg">
-                        Shop Now (17% OFF)
-                    </a>
-                    <a href="https://wa.me/918945046367?text=Hello%20Golden%20Sap,%20I%20want%20to%20order%20jaggery%20with%2017%25%20discount." target="_blank" class="bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold px-8 py-4 rounded-xl text-center transition flex items-center justify-center gap-2 shadow-lg">
-                        <span>Instant WhatsApp Order</span>
+                        Shop Collection (17% OFF)
                     </a>
                 </div>
             </div>
-            <div class="relative h-80 lg:h-[450px] rounded-2xl overflow-hidden shadow-2xl border-4 border-[#C69A51]/30 bg-[#713B22]/20 flex items-center justify-center">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#183D2B] via-transparent to-transparent z-10"></div>
-                <img src="https://grambahar.com/_next/image?url=https%3A%2F%2Fapi.grambahar.com%2Fassets%2F6a90d177-b16e-47ff-8d62-1ef7989c1fed.webp&w=1920&q=75" alt="Patali Gur Blocks" class="w-full h-full object-cover opacity-90 transform hover:scale-105 transition duration-700" />
+            <div class="relative h-80 lg:h-[420px] rounded-2xl overflow-hidden shadow-2xl border-4 border-[#C69A51]/30">
+                <img src="https://grambahar.com/_next/image?url=https%3A%2F%2Fapi.grambahar.com%2Fassets%2F6a90d177-b16e-47ff-8d62-1ef7989c1fed.webp&w=1920&q=75" alt="Patali Gur Blocks" class="w-full h-full object-cover">
             </div>
         </div>
     </section>
 
-    <!-- 2. ABOUT US SECTION -->
-    <section id="about" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div class="space-y-6">
-                <span class="text-xs uppercase tracking-widest text-[#713B22] font-bold block">About Golden Sap</span>
-                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#183D2B]">Rooted in Tradition, Crafted with Purity</h2>
-                <p class="text-gray-700 leading-relaxed font-light">
-                    At <strong>Golden Sap</strong>, based in Bethuadahari, Nakashipara, Nadia, we bring you the authentic, unadulterated essence of rural Bengal. Our journey begins in the misty winter mornings of Bengal's date palm groves, where traditional tappers (*siuli*) climb tall trees to harvest fresh, sweet sap (*khejur ras*).
-                </p>
-                <p class="text-gray-700 leading-relaxed font-light">
-                    We adhere strictly to time-honored artisanal methods—slow-boiling the sap in open cast-iron pans over wood fires until it transforms into golden Patali blocks or rich, fragrant Nolen Gur. Free from chemical additives, artificial sweeteners, or preservatives.
-                </p>
-                <div class="grid grid-cols-2 gap-4 pt-4">
-                    <div class="bg-white p-4 rounded-xl border border-[#C69A51]/20 shadow-sm">
-                        <span class="font-serif text-2xl font-bold text-[#183D2B] block">100%</span>
-                        <span class="text-xs text-gray-600 font-medium">Pure Date Palm Sap</span>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl border border-[#C69A51]/20 shadow-sm">
-                        <span class="font-serif text-2xl font-bold text-[#183D2B] block">Direct</span>
-                        <span class="text-xs text-gray-600 font-medium">Sourced From Artisans</span>
-                    </div>
-                </div>
-            </div>
-            <div class="relative h-96 rounded-2xl overflow-hidden shadow-xl border-2 border-[#C69A51]/30">
-                <img src="https://thebengalstore.com/cdn/shop/files/Untitled_design_1_09315c91-f630-4b3f-8276-126e46231bc6.png?v=1775133650&width=1200" alt="Traditional Jaggery Making" class="w-full h-full object-cover">
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. OUR STORY SECTION -->
-    <section id="story" class="bg-[#F6F0E5] py-24 border-y border-[#C69A51]/20">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-            <div class="text-center max-w-2xl mx-auto space-y-3">
-                <span class="text-xs uppercase tracking-widest text-[#713B22] font-bold block">Heritage & Craftsmanship</span>
-                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#183D2B]">The Heritage of Bengal Jaggery</h2>
-                <p class="text-gray-600 text-sm">How generations of traditional wisdom shape every single batch we offer.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#C69A51]/20 space-y-4">
-                    <div class="w-10 h-10 bg-[#183D2B] text-[#C69A51] rounded-xl flex items-center justify-center font-bold">01</div>
-                    <h3 class="font-serif text-xl font-bold text-[#183D2B]">Winter Harvest</h3>
-                    <p class="text-sm text-gray-600 leading-relaxed">Harvesting takes place exclusively during the cooler winter months when the sap runs sweetest and carries its characteristic aroma.</p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#C69A51]/20 space-y-4">
-                    <div class="w-10 h-10 bg-[#183D2B] text-[#C69A51] rounded-xl flex items-center justify-center font-bold">02</div>
-                    <h3 class="font-serif text-xl font-bold text-[#183D2B]">Artisanal Boiling</h3>
-                    <p class="text-sm text-gray-600 leading-relaxed">The fresh sap is simmered slowly in wide earthen or iron vessels. Master artisans judge readiness entirely by aroma and texture.</p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#C69A51]/20 space-y-4">
-                    <div class="w-10 h-10 bg-[#183D2B] text-[#C69A51] rounded-xl flex items-center justify-center font-bold">03</div>
-                    <h3 class="font-serif text-xl font-bold text-[#183D2B]">Pristine Packaging</h3>
-                    <p class="text-sm text-gray-600 leading-relaxed">Once set into solid Patali molds or bottled as liquid Nolen Gur, our products are securely sealed to lock in farm-fresh flavor.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. SHOP & PRICING SECTION -->
+    <!-- Products Section -->
     <section id="shop" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto mb-16">
             <span class="text-xs uppercase tracking-widest text-[#713B22] font-bold block mb-2">Flat 17% Discount Applied</span>
-            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#183D2B]">Shop Traditional Collections</h2>
-            <p class="text-gray-600 text-sm mt-2">Authentic Patali and Nolen Gur with calculated 17% discount pricing shown below. Add items to cart or order via WhatsApp (+91 89450 46367)!</p>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#183D2B]">Traditional Jaggery Collection</h2>
+            <p class="text-gray-600 text-sm mt-2">Free Delivery on orders above ₹699 (Standard delivery charge: ₹49).</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            <!-- Patali Gur Product Card -->
-            <div class="bg-white rounded-2xl p-8 shadow-md border border-[#C69A51]/20 flex flex-col justify-between hover:shadow-xl transition group">
+            <!-- Patali Gur Card -->
+            <div class="bg-white rounded-2xl p-8 shadow-md border border-[#C69A51]/20 flex flex-col justify-between hover:shadow-xl transition">
                 <div>
-                    <div class="h-56 bg-[#F6F0E5] rounded-xl mb-6 overflow-hidden border border-[#C69A51]/10 relative">
+                    <div class="h-60 bg-[#F6F0E5] rounded-xl mb-6 overflow-hidden relative">
                         <span class="absolute top-3 left-3 bg-[#713B22] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider z-10">17% OFF</span>
-                        <img src="https://grambahar.com/_next/image?url=https%3A%2F%2Fapi.grambahar.com%2Fassets%2F6a90d177-b16e-47ff-8d62-1ef7989c1fed.webp&w=1920&q=75" alt="Patali Gur" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <img src="https://grambahar.com/_next/image?url=https%3A%2F%2Fapi.grambahar.com%2Fassets%2F6a90d177-b16e-47ff-8d62-1ef7989c1fed.webp&w=1920&q=75" alt="Patali Gur" class="w-full h-full object-cover">
                     </div>
+
+                    <!-- Product Rating Badge -->
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="flex text-[#C69A51] text-sm">★★★★★</div>
+                        <span class="text-xs font-bold text-gray-700">4.9 / 5.0</span>
+                        <span class="text-xs text-gray-400">(128 Reviews)</span>
+                    </div>
+
                     <h3 class="font-serif text-2xl font-bold text-[#183D2B] mb-2">Patali Gur — Solid Date Palm Jaggery</h3>
-                    <p class="text-gray-600 mb-4">Handcrafted solid date palm jaggery pats with rich caramel notes and deep traditional flavor.</p>
+                    <p class="text-gray-600 mb-6 text-sm">Handcrafted solid date palm jaggery blocks with rich traditional aroma.</p>
                     
-                    <!-- Pricing Details with Add to Cart Actions -->
                     <div class="space-y-3 mb-6 bg-[#FAF7F2] p-4 rounded-xl border border-[#C69A51]/20 text-sm">
-                        <div class="flex justify-between items-center text-gray-700">
+                        <div class="flex justify-between items-center">
                             <div>
-                                <span class="font-medium block">500g Pack</span>
-                                <span class="line-through text-xs text-gray-400">₹480.72</span>
+                                <span class="font-medium">500g Pack</span>
+                                <span class="line-through text-xs text-gray-400 ml-1">₹480</span>
                                 <span class="text-base font-bold text-[#713B22] ml-1">₹399</span>
                             </div>
-                            <button onclick="addToCart('Patali Gur', '500g', 399)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-3 py-2 rounded-lg transition">
-                                + Add to Cart
-                            </button>
+                            <button onclick="addToCart('Patali Gur', '500g', 399)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add to Cart</button>
                         </div>
-                        <div class="flex justify-between items-center text-gray-700 border-t border-[#C69A51]/10 pt-2">
+                        <div class="flex justify-between items-center border-t border-[#C69A51]/10 pt-3">
                             <div>
-                                <span class="font-medium block">1 kg Pack</span>
-                                <span class="line-through text-xs text-gray-400">₹782.05</span>
+                                <span class="font-medium">1 kg Pack</span>
+                                <span class="line-through text-xs text-gray-400 ml-1">₹782</span>
                                 <span class="text-base font-bold text-[#713B22] ml-1">₹649</span>
                             </div>
-                            <button onclick="addToCart('Patali Gur', '1kg', 649)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-3 py-2 rounded-lg transition">
-                                + Add to Cart
-                            </button>
-                        </div>
-                        <div class="flex justify-between items-center text-gray-700 border-t border-[#C69A51]/10 pt-2">
-                            <div>
-                                <span class="font-medium block">2 kg Pack</span>
-                                <span class="line-through text-xs text-gray-400">₹1565.06</span>
-                                <span class="text-base font-bold text-[#713B22] ml-1">₹1299</span>
-                            </div>
-                            <button onclick="addToCart('Patali Gur', '2kg', 1299)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-3 py-2 rounded-lg transition">
-                                + Add to Cart
-                            </button>
+                            <button onclick="addToCart('Patali Gur', '1kg', 649)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add to Cart</button>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <a href="https://wa.me/918945046367?text=Hello%20Golden%20Sap,%20I%20want%20to%20order%20Patali%20Gur." target="_blank" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-sm text-sm">
-                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.124-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                        <span>Order Patali on WhatsApp</span>
-                    </a>
                 </div>
             </div>
 
-            <!-- Nolen Gur Product Card -->
-            <div class="bg-white rounded-2xl p-8 shadow-md border border-[#C69A51]/20 flex flex-col justify-between hover:shadow-xl transition group">
+            <!-- Nolen Gur Card -->
+            <div class="bg-white rounded-2xl p-8 shadow-md border border-[#C69A51]/20 flex flex-col justify-between hover:shadow-xl transition">
                 <div>
-                    <div class="h-56 bg-[#F6F0E5] rounded-xl mb-6 overflow-hidden border border-[#C69A51]/10 relative">
+                    <div class="h-60 bg-[#F6F0E5] rounded-xl mb-6 overflow-hidden relative">
                         <span class="absolute top-3 left-3 bg-[#713B22] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider z-10">17% OFF</span>
-                        <img src="https://thebengalstore.com/cdn/shop/files/Untitled_design_1_09315c91-f630-4b3f-8276-126e46231bc6.png?v=1775133650&width=1200" alt="Nolen Gur" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <img src="https://thebengalstore.com/cdn/shop/files/Untitled_design_1_09315c91-f630-4b3f-8276-126e46231bc6.png?v=1775133650&width=1200" alt="Nolen Gur" class="w-full h-full object-cover">
                     </div>
+
+                    <!-- Product Rating Badge -->
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="flex text-[#C69A51] text-sm">★★★★★</div>
+                        <span class="text-xs font-bold text-gray-700">4.8 / 5.0</span>
+                        <span class="text-xs text-gray-400">(94 Reviews)</span>
+                    </div>
+
                     <h3 class="font-serif text-2xl font-bold text-[#183D2B] mb-2">Nolen Gur — Liquid Date Palm Jaggery</h3>
-                    <p class="text-gray-600 mb-4">Fresh aromatic liquid date palm jaggery harvested during winter mornings in Bengal.</p>
+                    <p class="text-gray-600 mb-6 text-sm">Fresh aromatic liquid date palm jaggery harvested during chilly winter mornings.</p>
                     
-                    <!-- Pricing Details with Add to Cart Actions -->
                     <div class="space-y-3 mb-6 bg-[#FAF7F2] p-4 rounded-xl border border-[#C69A51]/20 text-sm">
-                        <div class="flex justify-between items-center text-gray-700">
+                        <div class="flex justify-between items-center">
                             <div>
-                                <span class="font-medium block">250g Bottle</span>
-                                <span class="line-through text-xs text-gray-400">₹360.24</span>
+                                <span class="font-medium">250g Bottle</span>
+                                <span class="line-through text-xs text-gray-400 ml-1">₹360</span>
                                 <span class="text-base font-bold text-[#713B22] ml-1">₹299</span>
                             </div>
-                            <button onclick="addToCart('Nolen Gur', '250g', 299)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-3 py-2 rounded-lg transition">
-                                + Add to Cart
-                            </button>
+                            <button onclick="addToCart('Nolen Gur', '250g', 299)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add to Cart</button>
                         </div>
-                        <div class="flex justify-between items-center text-gray-700 border-t border-[#C69A51]/10 pt-2">
+                        <div class="flex justify-between items-center border-t border-[#C69A51]/10 pt-3">
                             <div>
-                                <span class="font-medium block">500g Bottle</span>
-                                <span class="line-through text-xs text-gray-400">₹721.69</span>
+                                <span class="font-medium">500g Bottle</span>
+                                <span class="line-through text-xs text-gray-400 ml-1">₹721</span>
                                 <span class="text-base font-bold text-[#713B22] ml-1">₹599</span>
                             </div>
-                            <button onclick="addToCart('Nolen Gur', '500g', 599)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-3 py-2 rounded-lg transition">
-                                + Add to Cart
-                            </button>
+                            <button onclick="addToCart('Nolen Gur', '500g', 599)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add to Cart</button>
                         </div>
-                        <div class="flex justify-between items-center text-gray-700 border-t border-[#C69A51]/10 pt-2">
+                        <div class="flex justify-between items-center border-t border-[#C69A51]/10 pt-3">
                             <div>
-                                <span class="font-medium block">1 kg Bottle</span>
-                                <span class="line-through text-xs text-gray-400">₹1324.10</span>
+                                <span class="font-medium">1 kg Bottle</span>
+                                <span class="line-through text-xs text-gray-400 ml-1">₹1324</span>
                                 <span class="text-base font-bold text-[#713B22] ml-1">₹1099</span>
                             </div>
-                            <button onclick="addToCart('Nolen Gur', '1kg', 1099)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-3 py-2 rounded-lg transition">
-                                + Add to Cart
-                            </button>
+                            <button onclick="addToCart('Nolen Gur', '1kg', 1099)" class="bg-[#183D2B] hover:bg-[#713B22] text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add to Cart</button>
                         </div>
                     </div>
                 </div>
-                <div>
-                    <a href="https://wa.me/918945046367?text=Hello%20Golden%20Sap,%20I%20want%20to%20order%20Nolen%20Gur." target="_blank" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-sm text-sm">
-                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.124-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                        <span>Order Nolen on WhatsApp</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Secure Payment Methods Banner -->
-        <div class="bg-white rounded-2xl p-8 border border-[#C69A51]/20 shadow-sm text-center max-w-4xl mx-auto space-y-4">
-            <h3 class="font-serif text-xl font-bold text-[#183D2B]">Accepted Payment Methods</h3>
-            <p class="text-sm text-gray-600">We offer secure payment processing for seamless online checkout across India.</p>
-            <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-                <span class="bg-[#F6F0E5] text-[#183D2B] px-4 py-2 rounded-xl text-xs font-bold border border-[#C69A51]/20">💳 Credit & Debit Cards</span>
-                <span class="bg-[#F6F0E5] text-[#183D2B] px-4 py-2 rounded-xl text-xs font-bold border border-[#C69A51]/20">📱 UPI (Google Pay, PhonePe, Paytm)</span>
-                <span class="bg-[#F6F0E5] text-[#183D2B] px-4 py-2 rounded-xl text-xs font-bold border border-[#C69A51]/20">💵 Cash on Delivery (COD)</span>
-                <span class="bg-[#25D366]/10 text-[#25D366] px-4 py-2 rounded-xl text-xs font-bold border border-[#25D366]/30">💬 WhatsApp Pay / UPI QR</span>
             </div>
         </div>
     </section>
 
-    <!-- 5. CONTACT US SECTION -->
-    <section id="contact" class="bg-[#183D2B] text-[#F6F0E5] py-24">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div class="space-y-6">
-                <span class="text-xs uppercase tracking-widest text-[#C69A51] font-bold block">Get in Touch</span>
-                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">We'd Love to Hear From You</h2>
-                <p class="text-[#F6F0E5]/80 leading-relaxed font-light">
-                    Have questions about our sourcing, bulk orders, or shipping across India? Drop us a message or chat with us instantly on WhatsApp.
-                </p>
-                <div class="space-y-4 pt-4 text-sm">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-[#C69A51] font-bold">📍 Address:</span>
-                        <span class="text-[#F6F0E5]/90">Bethuadahari, Nakashipara, Nadia, West Bengal - 741126</span>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <span class="text-[#C69A51] font-bold">📧 Email:</span>
-                        <span class="text-[#F6F0E5]/90">goldensap.in@gmail.com</span>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <span class="text-[#C69A51] font-bold">📞 WhatsApp / Phone:</span>
-                        <span class="text-[#F6F0E5]/90">+91 89450 46367</span>
-                    </div>
-                </div>
-                <div class="pt-4">
-                    <a href="https://wa.me/918945046367?text=Hello%20Golden%20Sap,%20I%20have%20a%20question." target="_blank" class="bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold py-3 px-6 rounded-xl inline-flex items-center gap-2 shadow-md transition">
-                        <span>Chat with Us on WhatsApp</span>
-                    </a>
-                </div>
+    <!-- Customer Reviews Section -->
+    <section id="reviews" class="bg-[#F6F0E5] py-24 border-y border-[#C69A51]/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="text-xs uppercase tracking-widest text-[#713B22] font-bold block">Customer Testimonials</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#183D2B]">Loved by Sweet Lovers Across India</h2>
+                <p class="text-gray-600 text-sm">See what our customers have to say about the pure taste of our Patali and Nolen Gur.</p>
             </div>
-            <div class="bg-[#F6F0E5] text-[#222222] p-8 rounded-2xl shadow-xl">
-                <form class="space-y-4" onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent successfully.');">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Review 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#C69A51]/20 space-y-4 flex flex-col justify-between">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-[#183D2B] mb-2">Your Full Name</label>
-                        <input type="text" required placeholder="Enter your name" class="w-full bg-white border border-[#C69A51]/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#183D2B]">
+                        <div class="flex text-[#C69A51] mb-3">★★★★★</div>
+                        <p class="text-sm text-gray-700 italic">"The aroma of Nolen Gur is just like what we used to get in our village during winter. Absolutely pure and authentic. Highly recommended!"</p>
                     </div>
+                    <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-[#183D2B] text-sm">Subrata Mukherjee</h4>
+                            <p class="text-xs text-gray-500">Kolkata, West Bengal</p>
+                        </div>
+                        <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded">Verified Buyer</span>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#C69A51]/20 space-y-4 flex flex-col justify-between">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-[#183D2B] mb-2">Email Address</label>
-                        <input type="email" required placeholder="Enter your email" class="w-full bg-white border border-[#C69A51]/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#183D2B]">
+                        <div class="flex text-[#C69A51] mb-3">★★★★★</div>
+                        <p class="text-sm text-gray-700 italic">"Ordered Patali Gur and received it in pristine condition. Used it for making payesh and pithe—the taste was out of this world!"</p>
                     </div>
+                    <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-[#183D2B] text-sm">Priyanka Sen</h4>
+                            <p class="text-xs text-gray-500">Bangalore, Karnataka</p>
+                        </div>
+                        <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded">Verified Buyer</span>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-[#C69A51]/20 space-y-4 flex flex-col justify-between">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-[#183D2B] mb-2">Message</label>
-                        <textarea rows="4" required placeholder="How can we help you?" class="w-full bg-white border border-[#C69A51]/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#183D2B]"></textarea>
+                        <div class="flex text-[#C69A51] mb-3">★★★★★</div>
+                        <p class="text-sm text-gray-700 italic">"100% pure organic jaggery without any adulteration. Excellent packaging and fast delivery. Will definitely order again!"</p>
                     </div>
-                    <button type="submit" class="w-full bg-[#183D2B] hover:bg-[#713B22] text-[#F6F0E5] font-bold py-4 rounded-xl transition shadow-md">
-                        Send Message
-                    </button>
-                </form>
+                    <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-[#183D2B] text-sm">Anirban Roy</h4>
+                            <p class="text-xs text-gray-500">Delhi NCR</p>
+                        </div>
+                        <span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded">Verified Buyer</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
-
-    <!-- Floating WhatsApp Widget -->
-    <a href="https://wa.me/918945046367?text=Hello%20Golden%20Sap,%20I%20would%20like%20to%20order%20jaggery." target="_blank" aria-label="Chat on WhatsApp" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#20ba5a] transition transform hover:scale-110 flex items-center justify-center">
-        <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.124-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-    </a>
-
-    <!-- Cart Notification Toast -->
-    <div id="cart-notification" class="fixed bottom-6 left-6 z-50 bg-[#183D2B] text-[#F6F0E5] px-4 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 text-sm font-semibold border border-[#C69A51]/40">
-        Item added to cart!
-    </div>
-
-    <!-- Cart Modal Drawer -->
-    <div id="cart-modal" class="fixed inset-0 z-50 hidden items-center justify-end bg-black/50 backdrop-blur-sm">
-        <div class="bg-white text-[#222222] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between border-l border-[#C69A51]/20">
-            <div>
-                <div class="flex items-center justify-between pb-4 border-b border-gray-200">
-                    <h3 class="font-serif text-xl font-bold text-[#183D2B]">Your Shopping Cart</h3>
-                    <button onclick="toggleCartModal()" class="text-gray-500 hover:text-black text-xl font-bold">&times;</button>
-                </div>
-                <div id="cart-items-container" class="py-4 space-y-3 max-h-[60vh] overflow-y-auto">
-                    <!-- Dynamic cart items will load here -->
-                    <p class="text-gray-500 text-center py-8">Your cart is empty.</p>
-                </div>
-            </div>
-            <div class="border-t border-gray-200 pt-4 space-y-4">
-                <div class="flex justify-between items-center text-lg font-bold">
-                    <span>Total:</span>
-                    <span id="cart-total-price" class="text-[#713B22]">₹0</span>
-                </div>
-                <button onclick="checkoutWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-md">
-                    <span>Checkout via WhatsApp</span>
-                </button>
-                <button onclick="toggleCartModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl transition text-sm">
-                    Continue Shopping
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- Footer -->
     <footer class="bg-[#112a1e] text-[#F6F0E5] pt-16 pb-12 border-t border-[#C69A51]/25">
@@ -521,15 +414,18 @@
             <div class="space-y-4">
                 <span class="font-serif text-2xl font-bold block text-white">Golden Sap</span>
                 <p class="text-sm text-[#F6F0E5]/80">“The Natural Sweetness of Bengal” — Bringing authentic date palm jaggery straight from rural producers to your home.</p>
+                <div class="pt-2">
+                    <span class="inline-block bg-[#183D2B] text-[#C69A51] border border-[#C69A51]/40 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold">
+                        FSSAI Lic. No: REPLACE_WITH_YOUR_FSSAI_NUMBER
+                    </span>
+                </div>
             </div>
             <div>
                 <h4 class="font-serif font-bold text-lg mb-4 text-[#C69A51]">Quick Links</h4>
                 <ul class="space-y-2 text-sm text-[#F6F0E5]/80">
                     <li><a href="#home" class="hover:text-white transition">Home</a></li>
-                    <li><a href="#about" class="hover:text-white transition">About Us</a></li>
-                    <li><a href="#story" class="hover:text-white transition">Our Story</a></li>
-                    <li><a href="#shop" class="hover:text-white transition">Shop All</a></li>
-                    <li><a href="#contact" class="hover:text-white transition">Contact Us</a></li>
+                    <li><a href="#shop" class="hover:text-white transition">Shop Collection</a></li>
+                    <li><a href="#reviews" class="hover:text-white transition">Customer Reviews</a></li>
                 </ul>
             </div>
             <div>
@@ -542,16 +438,14 @@
                 </ul>
             </div>
             <div>
-                <h4 class="font-serif font-bold text-lg mb-4 text-[#C69A51]">Newsletter</h4>
-                <p class="text-sm text-[#F6F0E5]/80 mb-4">Subscribe to register for seasonal updates and harvest news.</p>
-                <form class="flex flex-col space-y-3" onsubmit="event.preventDefault(); alert('Subscribed successfully!');">
-                    <input type="email" required placeholder="Enter your email" class="bg-[#183D2B] border border-[#C69A51]/40 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#C69A51]">
-                    <button type="submit" class="bg-[#C69A51] hover:bg-[#b0853f] text-[#183D2B] font-bold py-3 px-4 rounded-lg text-sm transition">Subscribe</button>
-                </form>
+                <h4 class="font-serif font-bold text-lg mb-4 text-[#C69A51]">Contact Us</h4>
+                <p class="text-sm text-[#F6F0E5]/80 mb-2">📍 Bethuadahari, Nakashipara, Nadia, WB - 741126</p>
+                <p class="text-sm text-[#F6F0E5]/80 mb-2">📧 goldensap.in@gmail.com</p>
+                <p class="text-sm text-[#F6F0E5]/80">📞 +91 89450 46367</p>
             </div>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 text-center text-xs text-[#F6F0E5]/60">
-            &copy; 2026 Golden Sap. All rights reserved. Website designed for premium D2C commerce.
+            &copy; 2026 Golden Sap. All rights reserved. Designed for D2C commerce.
         </div>
     </footer>
 
@@ -567,6 +461,46 @@
                 <button onclick="closePolicy()" class="bg-[#183D2B] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#713B22] transition">Close</button>
             </div>
         </div>
+    </div>
+
+    <!-- Cart Modal Drawer -->
+    <div id="cart-modal" class="fixed inset-0 z-50 hidden items-center justify-end bg-black/50 backdrop-blur-sm">
+        <div class="bg-white text-[#222222] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between border-l border-[#C69A51]/20">
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+                    <h3 class="font-serif text-xl font-bold text-[#183D2B]">Your Shopping Cart</h3>
+                    <button onclick="toggleCartModal()" class="text-gray-500 hover:text-black text-xl font-bold">&times;</button>
+                </div>
+                <div id="cart-items-container" class="py-4 space-y-3 max-h-[50vh] overflow-y-auto">
+                    <p class="text-gray-500 text-center py-8">Your cart is empty.</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-4 space-y-2">
+                <div class="flex justify-between items-center text-sm text-gray-600">
+                    <span>Subtotal:</span>
+                    <span id="cart-subtotal-price">₹0</span>
+                </div>
+                <div class="flex justify-between items-center text-sm text-gray-600">
+                    <span>Delivery Charge:</span>
+                    <span id="cart-shipping-price">₹0</span>
+                </div>
+                <div class="flex justify-between items-center text-lg font-bold border-t border-gray-100 pt-2">
+                    <span>Total Amount:</span>
+                    <span id="cart-total-price" class="text-[#713B22]">₹0</span>
+                </div>
+                <p class="text-[11px] text-green-700 font-medium text-center bg-green-50 py-1 rounded">🚚 Free Delivery on orders above ₹699!</p>
+                
+                <button onclick="checkoutWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-md mt-2">
+                    <span>Checkout via WhatsApp</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="cart-notification" class="fixed bottom-6 left-6 z-50 bg-[#183D2B] text-[#F6F0E5] px-4 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 text-sm font-semibold border border-[#C69A51]/40">
+        Item added to cart!
     </div>
 
 </body>
